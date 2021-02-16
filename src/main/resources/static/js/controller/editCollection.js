@@ -30,20 +30,28 @@ function constructEditCollectionMetadata(data,status) {
 	$.each(data, function(key, value) {
 
 		if(value.attrName.indexOf("_identifier") != -1 || value.attrName.indexOf("asset_type") != -1) {
-			$("#userMetaData tbody").append("<tr><td>" + value.displayName + "&nbsp;&nbsp;<i class='fas fa-question-circle' data-toggle='tooltip' " +
+			$("#userMetaData tbody").append("<tr><td>" + value.attrName + "&nbsp;&nbsp;<i class='fas fa-question-circle' data-toggle='tooltip' " +
 					"data-placement='right' title='"+value.description+"'></i></td><td><input type='text' disabled='true' aria-label='value of meta data' name='zAttrStr_"+value.attrName+"' style='width:70%;' value='" + value.attrValue + "'></td></tr>");
 			
-		} else if(value.validValues == null && value.attrName.indexOf("access_group") == -1 ) {
+		} else if(value.validValues == null && value.attrName.indexOf("access_group") == -1) {
 			var attrVal = value.attrValue;
 			if(!attrVal) {
 				attrVal = "";
 			}
-			
-			$("#userMetaData tbody").append("<tr><td>" + value.displayName + "&nbsp;&nbsp;<i class='fas fa-question-circle' data-toggle='tooltip' " +
-					"data-placement='right' title='"+value.description+"'></i></td><td><input type='text' is_mandatory='"+value.mandatory+"' aria-label='value of meta data' name='zAttrStr_"+value.attrName+"' style='width:70%;' value='" + attrVal + "'></td></tr>");
+			var placeholderValue ="";
+		     if(value.mandatory && value.mandatory == true) {
+		    	 placeholderValue = "Required";
+		     }
+		     var isMandatory ="";
+		     if(value.mandatory) {
+		    	 isMandatory = value.mandatory;
+		     }
+		     
+			$("#userMetaData tbody").append("<tr><td>" + value.attrName + "&nbsp;&nbsp;<i class='fas fa-question-circle' data-toggle='tooltip' " +
+					"data-placement='right' title='"+value.description+"'></i></td><td><input type='text' placeholder='"+placeholderValue+"' is_mandatory='"+isMandatory+"' aria-label='value of meta data' name='zAttrStr_"+value.attrName+"' style='width:70%;' value='" + attrVal + "'></td></tr>");
 
 		} else if(value.validValues != null) {
-			$("#userMetaData tbody").append("<tr><td>" + value.displayName+ "&nbsp;&nbsp;<i class='fas fa-question-circle' data-toggle='tooltip' " +
+			$("#userMetaData tbody").append("<tr><td>" + value.attrName + "&nbsp;&nbsp;<i class='fas fa-question-circle' data-toggle='tooltip' " +
 					"data-placement='right' title='"+value.description+"'></i></td><td><select id='validvalueList' class='simple-select2' style='width:70%;' name='zAttrStr_"+value.attrName+"' value='"+value.attrValue+"'></select></td></tr>");
 
 			var $select = $("#validvalueList");	    	  
@@ -194,6 +202,8 @@ function updateMetaDataCollection() {
 	});
 		
 		if(!validate) {
+			$(".editCollectionSuccess").hide();
+			 $(".editCollectionMsg").html("");
 			$(".editCollectionError").show();
 			$(".editCollectionErrorMsg").html("Enter all the required metadata.");
 		} else {
